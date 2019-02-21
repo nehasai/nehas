@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls" 
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/tls 
+		http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/http
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/core 
+		http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+		http://www.mulesoft.org/schema/mule/tls 
+		http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	
+<http:listener-config name="HTTPS_Listener_config" doc:name="HTTP Listener config" doc:id="61f71aa2-94b4-4bb0-abcc-f62001d25aab" >
+		<http:listener-connection host="0.0.0.0" port="${https.port}" tlsContext="TLS_Context" protocol="HTTPS"/>
+	</http:listener-config>
+	<http:request-config name="Saleslogix_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="4ca2f541-b3c5-475f-96a6-13b4d2b531a4" basePath="/sys-api/saleslogix" sendCorrelationId="NEVER">
+		<http:request-connection host="${sys.api.saleslogix.host}" port="${sys.api.saleslogix.port}" protocol="HTTPS">
+			<http:authentication >
+				<http:basic-authentication username="${sys-api-saleslogix.username}" password="${sys-api-saleslogix.password}" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<global-property doc:name="Global Property" doc:id="7565dc86-7073-4be5-b67f-9e53505a5c9e" name="env" value="local" />
+	<configuration-properties doc:name="Configuration properties" doc:id="3c847244-0f8d-4b0a-82f5-3ce7d6801e40" file="prom-proc-prac-${env}.properties" />
+	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="8feb42dc-d769-401e-9a78-f215fc79a29c" >
+		<!-- <tls:trust-store path="client_truststore.ts" password="PromLabsPass" insecure="true" /> -->
+		<tls:key-store type="jks" path="promlabs.jks" alias="promlabs" keyPassword="PromLabsPass" password="PromLabsPass" />
+	</tls:context>	
+	<api-gateway:autodiscovery apiId="15637173" doc:name="API Autodiscovery" doc:id="040b06e8-cb3a-45d9-9449-a8f9bfd0d49e" flowRef="api-main" />
+</mule>

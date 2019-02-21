@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" 
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/mule-apikit 
+		http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/core 
+		http://www.mulesoft.org/schema/mule/core/current/mule.xsd 
+		http://www.mulesoft.org/schema/mule/http 
+		http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/mule-apikit 
+		http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+		http://www.mulesoft.org/schema/mule/ee/core 
+		http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/anypoint-mq 
+		http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd">
+<flow name="postPractitionerFlow" doc:id="75ba7ec8-1968-4b9b-af76-c9dcca795e12" >
+		<http:request method="GET" doc:name="GET /sys-api/saleslogix/practitioner - Set output Payload to vars.saleslogixResponse" doc:id="f0a4071c-3dc5-49f4-bc31-7c0fed8c9a9d" config-ref="Saleslogix_HTTP_Request_configuration" target="saleslogixResponse" targetValue="#[output application/java --- payload]" path="/practitioner">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"npi" : vars.inputPayload.identifier.npi,
+	"phone" : vars.inputPayload.telecom.phone,
+	"fax" : vars.inputPayload.telecom.fax,
+	"zip" : vars.inputPayload.address.zip,
+	"city" : vars.inputPayload.address.city,
+	"state" : vars.inputPayload.address.state,
+	"country" : vars.inputPayload.address.country,
+	"firstname" : vars.inputPayload.first,
+	"portalproviderid" : vars.inputPayload.identifier.portalId,
+	"lastname" : vars.inputPayload.last
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="b3286d41-5b6b-40c2-845b-700a571e7d9c" >
+			<when expression="#[sizeOf(vars.saleslogixResponse) == 1]">
+				<logger level="INFO" doc:name="Logger" doc:id="234538a5-b050-4b06-826f-34f86ec446ca" message="#['Practitioner found, updating record']" />
+				<ee:transform doc:name="add id to payload" doc:id="5aa16ac3-997c-4881-b00e-03004014f4ec">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{id: vars.saleslogixResponse[0].id} ++ payload
+
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<http:request method="PUT" doc:name="PUT /sys-api/saleslogix/practitioner/{id}" doc:id="7a1a80bb-0b58-493f-a530-82e14f2d1a36" config-ref="Saleslogix_HTTP_Request_configuration" path="/practitioner/{id}">
+					<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"id" : vars.saleslogixResponse[0].id
+}]]]></http:uri-params>
+				</http:request>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="76f2886a-d8b9-48c4-b5a2-016e25703bf9" message="#['No Practitioner found, creating resource']" />
+				<http:request method="POST" doc:name="POST sys-api/saleslogix/organization" doc:id="71a99cd8-6bd6-4cdc-94f1-f3c8f9c6fc16" config-ref="Saleslogix_HTTP_Request_configuration" path="/practitioner"/>
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="updated" doc:id="2259a788-656c-409c-89e3-e935f0d83b07" name="updated"/>
+	</flow>
+	<sub-flow name="updated" doc:id="be672879-c477-4e36-b6d0-ce20487e1e7d" >
+		<set-payload value="#[null]" doc:name="Set Null Payload" doc:id="b4ae275c-adca-4f36-bc8e-d3b4f0f993ed" />
+		<set-variable value="204" doc:name="204 No Content" doc:id="a9538657-ee79-4ffd-b870-d98804b4b3a3" variableName="httpStatus"/>
+	</sub-flow>
+    
+	<sub-flow name="accepted" doc:id="68629e75-4bfb-4d12-9856-f3336f79b14f" >
+		<set-payload value="#[null]" doc:name="Set Null Payload" doc:id="24aca4de-6215-4a66-95c3-e7921ab85c47" />
+		<set-variable value="202" doc:name="202 Accepted" doc:id="656a2347-7c87-40b0-8bb5-6feb306968ad" variableName="httpStatus"/>
+	</sub-flow>
+</mule>

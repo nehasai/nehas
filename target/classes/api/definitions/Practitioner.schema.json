@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "object",
+      "properties": {
+        "portalId": {
+          "type": "string"
+        },
+        "npi": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "portalId"
+      ]
+    },
+    "name": {
+      "type": "object",
+      "properties": {
+        "first": {
+          "type": "string"
+        },
+        "last": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "first",
+        "last"
+      ]
+    },
+    "role": {
+      "type": "object",
+      "properties": {
+        "managingOrganization": {
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "object",
+              "properties": {
+                "npi": {
+                  "type": "string"
+                },
+                "portalId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "portalId"
+              ]
+            }
+          },
+          "required": [
+            "identifier"
+          ]
+        },
+        "specialty": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "managingOrganization"
+      ]
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "line": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "line",
+        "city",
+        "country",
+        "state",
+        "zip"
+      ]
+    },
+    "telecom": {
+      "type": "object",
+      "properties": {
+        "fax": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "fax",
+        "phone"
+      ]
+    },
+    "registeredByIdentifier": {
+      "type": "object",
+      "properties": {
+        "portalId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "portalId"
+      ]
+    }
+  },
+  "required": [
+    "identifier",
+    "name",
+    "role",
+    "address",
+    "telecom",
+    "registeredByIdentifier"
+  ]
+}

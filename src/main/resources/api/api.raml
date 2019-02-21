@@ -1,0 +1,52 @@
+#%RAML 1.0
+title: Prometheus Process API Practitioner
+version: 1.0.0
+baseUri: https://host/proc-api/prac
+          
+types:
+  practitioner: !include definitions/Practitioner.schema.json
+
+traits:
+  basic-auth-required:
+    headers:
+      Authorization:
+        type: string
+        required: true
+        example: "Basic <username:password>"
+          
+resourceTypes:
+  collection:
+      description: Collection of <<resourcePathName>>.
+      post:
+        body: 
+          application/json:
+            schema: <<resourcePathName>>
+            example: <<examplePostRequest>>
+        responses:
+          201:
+  singleResource:
+      description: <<resourcePathName>>
+      get:
+        responses:
+          200:
+            body:
+              application/json:
+                example: <<exampleGetResponse>>
+      put:
+        body: 
+          application/json:
+            schema: <<resourcePathName>>
+        responses:
+          200:
+          204:
+          
+/practitioner:
+  is: [basic-auth-required]
+  type:
+    collection:
+      examplePostRequest: !include examples/post_practitioner_request.json
+
+  /{id}:
+    type: 
+      singleResource:
+        exampleGetResponse: !include examples/get_practitioner_response.json

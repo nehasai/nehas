@@ -1,0 +1,38 @@
+{
+  "id": "saleslogix456",
+  "identifier": {
+    "portalId": "liferay456",
+    "npi": "npi456"
+  },
+  "name": {
+    "first": "Adam",
+    "last": "Careful"
+  },
+  "role": {
+    "managingOrganization": {
+      "identifier": {
+        "npi": "npi123",
+        "portalId": "liferay123"
+      }
+    },
+    "specialty": "Gastroenterology"
+  },
+  "address": {
+    "line": [
+      "Address Line1",
+      "Address Line2",
+      "Address Line3"
+    ],
+    "city": "San Diego",
+    "country": "US",
+    "state": "California",
+    "zip": "12345"
+  },
+  "telecom": {
+    "fax": "0123456789",
+    "phone": "1234567890"
+  },
+  "registeredByIdentifier": {
+    "portalId": "somePortalUserId"
+  }
+}

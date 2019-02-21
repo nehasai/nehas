@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="putOrganization-OrganizationFound" description="Test" doc:id="9531bfc4-8c05-4bb2-a17d-39f5fdadafd3" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="mock get requester to return Practitioner Array in vars.saleslogixResponse" doc:id="316e20a6-37ef-46f7-a100-220146b5ce80" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="method" whereValue="GET" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="saleslogixResponse" value='#[[{
+  "id": "saleslogix123",
+  "address": {
+    "line": [
+      "Address Line1",
+      "Address Line2",
+      "Address Line3"
+    ],
+    "city": "San Diego",
+    "country": "US",
+    "state": "California",
+    "zip": "12345"
+  },
+  "identifier": {
+    "npi": "npi123",
+    "portalId": "liferay123"
+  },
+  "name": "Name of the Organization",
+  "telecom": {
+    "fax": "0123456789",
+    "phone": "1234567890"
+  },
+  "registeredByIdentifier": {
+    "portalId": "somePortalUserId"
+  }
+}]]' mediaType="application/java" encoding="UTF-8"/>
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock PUT requester" doc:id="6f841097-7517-4be9-8335-22a94a4cc351" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="method" whereValue="PUT" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[readUrl("classpath://api/examples/post_practitioner_request.json")]' doc:name="Set post_practitioner_request.json" doc:id="ad8dddb7-94aa-4828-8ae8-577f7f629ca8" />
+			<set-variable value='#[payload]' doc:name="Set inputPayload" doc:id="26c0b0cb-fc5b-4a9f-b5d2-ba5a17689522" variableName="inputPayload"/>
+			<flow-ref doc:name="postPractitionerFlow" doc:id="dafc0aa7-cd7b-4d89-945f-212cb8f67c93" name="postPractitionerFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that final payload == null" doc:id="1d9a6acd-4b65-4d74-a090-95a48c7d94d7" expression="#[payload]" is="#[MunitTools::nullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="postOrganization-noOrganizationFound" description="Test" doc:id="a65e5f15-9801-4b79-b5fb-83b0602a7a16">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="mock get requester to return Empty Array in vars.saleslogixResponse" doc:id="492d8aad-3f77-4702-b253-898e186826b6" processor="http:request">
+					<munit-tools:with-attributes />
+					<munit-tools:then-return>
+						<munit-tools:variables >
+						<munit-tools:variable key="saleslogixResponse" value="#[[]]" mediaType="application/java" />
+					</munit-tools:variables>
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+				<munit-tools:mock-when doc:name="Mock POST requester" doc:id="5a434a7a-617e-4ef7-aeeb-0dcded138a2e" processor="http:request">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute attributeName="method" whereValue="POST" />
+					</munit-tools:with-attributes>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<set-payload value='#[readUrl("classpath://api/examples/post_practitioner_request.json")]' doc:name="Set post_practitioner_request.json" doc:id="86066007-9d03-4a4f-8f48-d092596dfc37" />
+				<set-variable value="#[payload]" doc:name="Set inputPayload" doc:id="98f97dd8-4c13-402f-90b9-5ac79fca0eb0" variableName="inputPayload" />
+				<flow-ref doc:name="postPractitionerFlow" doc:id="8c65cc6b-bc93-4cf1-868f-cedaa33f1329" name="postPractitionerFlow" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that final payload == null" doc:id="991f6ee2-079b-4375-9a98-ab1acd34b672" expression="#[payload]" is="#[MunitTools::nullValue()]" />
+			</munit:validation>
+		</munit:test>
+
+
+</mule>

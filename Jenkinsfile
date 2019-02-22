@@ -5,9 +5,9 @@ node {
 			def mvnHome = tool name: 'maven3', type: 'maven'
 			def mvnCMD = "${mvnHome}/bin/mvn"
 			sh "${mvnCMD} -s $MAVEN_SETTINGS_XML clean package"
-            }
-	}
-}
+			}
+	      }
+        }
         
 
     

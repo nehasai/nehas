@@ -7,6 +7,7 @@ node {
 			sh "${mvnCMD} -s $MAVEN_SETTINGS_XML clean package"
             }
 	}
+}
         
 
     
